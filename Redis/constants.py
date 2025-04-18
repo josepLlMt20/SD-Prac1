@@ -1,0 +1,5 @@
+INSULT_QUEUE = "insult_queue"
+INSULT_LIST = "INSULTS"
+INSULT_CHANNEL = "insult_broadcast"
+TEXT_QUEUE = "text_queue"
+RESULT_LIST = "RESULTS"
