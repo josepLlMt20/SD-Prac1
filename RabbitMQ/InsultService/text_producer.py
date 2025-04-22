@@ -1,21 +1,22 @@
 import pika
 import time
-from RabbitMQ.constants import INSULT_QUEUE
+import random
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+# Conexión a RabbitMQ
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
-channel.queue_declare(queue=INSULT_QUEUE)
+
+# Declarar la cola
+channel.queue_declare(queue='insult_queue')
 
 insults = [
-    "You're as useless as the 'ueue' in 'queue'.",
-    "You bring everyone joy… when you leave the room.",
-    "You're the reason the gene pool needs a lifeguard."
+    "Eres más inútil que un cenicero en una moto.",
+    "Tienes menos neuronas que un ladrillo.",
+    "Eres más lento que un caracol cojo."
 ]
 
-i = 0
 while True:
-    insult = insults[i % len(insults)]
-    channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=insult)
-    print(f"Produced insult: {insult}")
-    i += 1
+    insult = random.choice(insults)
+    channel.basic_publish(exchange='', routing_key='insult_queue', body=insult)
+    print(f"Produced: {insult}")
     time.sleep(5)

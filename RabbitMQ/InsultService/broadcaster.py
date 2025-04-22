@@ -1,17 +1,18 @@
 import pika
 import time
-from RabbitMQ.insults_data import get_insults
-from RabbitMQ.constants import INSULT_CHANNEL
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+# Conectar a RabbitMQ
+connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
-channel.exchange_declare(exchange=INSULT_CHANNEL, exchange_type='fanout')
+channel.exchange_declare(exchange='insult_exchange', exchange_type='fanout')
 
-print("InsultBroadcaster started.")
+stored_insults = [
+    "Eres más inútil que un tenedor en sopa.",
+    "Tienes menos carisma que un ladrillo mojado."
+]
+
 while True:
-    insults = get_insults()
-    if insults:
-        insult = insults[0]
-        channel.basic_publish(exchange=INSULT_CHANNEL, routing_key='', body=insult)
-        print(f"Broadcasted insult: {insult}")
+    for insult in stored_insults:
+        channel.basic_publish(exchange='insult_exchange', routing_key='', body=insult)
+        print(f"Broadcasted: {insult}")
     time.sleep(5)
