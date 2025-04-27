@@ -3,16 +3,18 @@ import time
 import random
 
 proxy = xmlrpc.client.ServerProxy("http://localhost:8010/")
+
 texts = [
-    "El cielo esta azul.",
-    "Hoy es un buen dia para programar.",
-    "Me gusta el helado.",
-    "La vida es bella.",
-    "El sol brilla.",
-    "La luna es hermosa.",
-    "Los gatos son adorables.",
-    "Los perros son leales.",
-    "El mar es profundo.",
+    "Hoy he hablado con un idiota en la cafetería.",
+    "El cielo está azul, pero tú sigues siendo un bobo.",
+    "Mi jefe es un auténtico estúpido.",
+    "Qué tonto he sido al olvidar las llaves.",
+    "Ese imbécil me empujó en la cola del cine.",
+    "El cretino de mi vecino no para de hacer ruido.",
+    "Ayer vi un cochino robando en la tienda.",
+    "No seas un tarado y estudia para el examen.",
+    "El partido fue un desastre por culpa de un cabrón.",
+    "El niño se portó como un auténtico mierdolo.",
 ]
 
 while True:

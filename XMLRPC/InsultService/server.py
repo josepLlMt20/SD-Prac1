@@ -1,4 +1,5 @@
 from xmlrpc.server import SimpleXMLRPCServer
+from concurrent.futures import ThreadPoolExecutor
 import xmlrpc.client
 import threading
 import random
@@ -25,12 +26,16 @@ class InsultService:
         return False
 
     def broadcast_insult(self, insult):
-        for url in self.subscribers:
+        def send(url):
             try:
                 proxy = xmlrpc.client.ServerProxy(url)
                 proxy.receive(insult)
             except Exception as e:
                 print(f"Error notifying {url}: {e}")
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(send, self.subscribers)
+
         return True
 
     def start_broadcast(self):
