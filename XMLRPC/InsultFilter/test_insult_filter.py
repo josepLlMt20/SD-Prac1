@@ -1,57 +1,56 @@
 import xmlrpc.client
 import time
 import re
+from threading import Thread
+
+proxy = xmlrpc.client.ServerProxy("http://localhost:8010/")
+
+def run_worker():
+    while True:
+        text = proxy.get_task()
+        if not text:
+            break
+        insults = proxy.get_insults()
+        filtered = text
+        for insult in insults:
+            pattern = re.compile(r'\b' + re.escape(insult) + r'\b', re.IGNORECASE)
+            filtered = pattern.sub("CENSORED", filtered)
+        proxy.submit_result(filtered)
+        print(f"[Worker] Procesado: {filtered}")
 
 def test_insult_filter():
-    print("[Test] Iniciant test d'InsultFilter...")
-    proxy = xmlrpc.client.ServerProxy("http://localhost:8010/")
-
-    # 1. Afegir insults
-    insults = ["tonto", "idiota", "imbécil", "bobo"]
+    print("[TEST] Afegint insults...")
+    insults = ["tonto", "idiota", "imbécil", "bobo", "cretino"]
     for insult in insults:
         proxy.submit_insult(insult)
-        print(f"[Test] Insult afegit: {insult}")
 
-    # 2. Enviar textos
+    print("[TEST] Enviant textos...")
     texts = [
-        "Hoy he hablado con un idiota en la cafetería.",
+        "Eres un tonto integral.",
+        "Mi jefe es un cretino.",
+        "Hoy he hablado con un idiota.",
         "El cielo está azul.",
-        "Ese bobo no sabía qué hacer.",
-        "Qué tonto soy!",
-        "Me gusta el helado.",
-        "El imbécil de turno no apareció."
+        "Qué bobo eres a veces.",
     ]
-
     for text in texts:
         proxy.submit_text(text)
-        print(f"[Test] Text enviat: {text}")
 
-    # 3. Llançar Worker manualment
-    while True:
-        task = proxy.get_task()
-        if task:
-            insults_list = proxy.get_insults()
-            filtered = task
-            for insult in insults_list:
-                pattern = re.compile(r'\b' + re.escape(insult) + r'\b', re.IGNORECASE)
-                filtered = pattern.sub("CENSORED", filtered)
-            proxy.submit_result(filtered)
-            print(f"[Worker] Text filtrat: {filtered}")
-        else:
-            break  # No més textos a processar
+    # Iniciar el worker com a thread
+    print("[TEST] Iniciant worker integrat...")
+    worker_thread = Thread(target=run_worker)
+    worker_thread.start()
+    worker_thread.join()
 
-    # 4. Recuperar resultats
+    # Mostrar resultats
+    print("[TEST] Resultats:")
     results = proxy.get_results()
-    print("\n[Test] Resultats Finals:")
-    for result in results:
-        print(f" - {result}")
+    for r in results:
+        print(f" - {r}")
 
-    # 5. Comprovar que hi ha textos censurats
-    censored = any("CENSORED" in res for res in results)
-    if censored:
+    if any("CENSORED" in r for r in results):
         print("\n✅ Test passat correctament!")
     else:
-        print("\n❌ Test fallat: no s'ha censurat res.")
+        print("\n❌ Test fallat: cap text censurat.")
 
 if __name__ == "__main__":
     test_insult_filter()

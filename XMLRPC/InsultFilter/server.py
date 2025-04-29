@@ -32,6 +32,12 @@ class FilterServer:
     def get_insults(self):
         return self.insults
 
+    def reset(self):
+        self.text_queue = []
+        self.results = []
+        self.insults = []
+        return True
+
 server = SimpleXMLRPCServer(("localhost", 8010), allow_none=True)
 server.register_instance(FilterServer())
 print("[FilterServer] Corriendo en puerto 8010")
