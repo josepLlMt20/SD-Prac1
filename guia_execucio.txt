@@ -1,0 +1,119 @@
+1. XMLRPC:
+
+1.1 InsultService
+    # Terminal A
+    python XMLRPC/InsultService/server.py           # ← Servidor (port 8000)
+
+    # Terminal B
+    python XMLRPC/InsultService/receiver.py         # ← Client receptor (port 8001)
+
+    # Terminal C
+    python XMLRPC/InsultService/client_adder.py     # ← Afegeix insults
+
+1.2 InsultFilter
+    # Terminal D
+    python XMLRPC/InsultFilter/filter_server.py     # ← Servidor (port 8010)
+
+    # Terminal E
+    python XMLRPC/InsultFilter/init_insults.py      # ← Afegeix insults al servidor de filtrat
+
+    # Terminal F
+    python XMLRPC/InsultFilter/text_producer.py     # ← Frases a afegir al servidor de filtrat
+
+    # Terminal G
+    python XMLRPC/InsultFilter/worker.py            # ← 1 worker de filtrat
+
+    # Terminal H (opcional)
+    python XMLRPC/InsultFilter/viewer.py            # ← Visualitzador de insults
+
+PELS TESTS HAS DE TENIR EL server.py ENCES
+
+2. Redis:
+
+2.1 InsultService
+    # Terminal A
+    python Redis/InsultService/insult_consumer.py (consumidor de insults)
+
+    # Terminal B
+    python Redis/InsultService/insult_producer.py (productor de insults)
+
+    # Terminal C
+    python Redis/InsultService/insult_broadcaster.py (emissor de insults)
+
+    # Terminal D
+    python Redis/InsultService/insult_receiver.py (receptor de insults)
+
+2.2 InsultFilter
+    python Redis/InsultFilter/reset_filter_data.py (per reinicar les cues de Redis)
+
+    python Redis/InsultFilter/init_insults.py (afegeix insults al servidor de filtrat)
+
+    python Redis/InsultFilter/filter.py # ← Filtrat d'insults (port 6379)
+
+    python Redis/InsultFilter/text_producer.py (productor de frases)
+
+PELS TEST POTS EXECUTAR ELS FITXERS DE TEST TAL CUAL, Recorda tenir el docker ences
+
+3. RabbitMQ (Recorda que has d'engegar el docker de RabbitMQ abans d'executar els scripts):
+
+3.1 InsultService
+    # Terminal A
+    python RabbitMQ/InsultService/consumer.py (consumidor de insults)
+
+    # Terminal B
+    python RabbitMQ/InsultService/text_producer.py (productor de insults)
+
+    # Terminal C
+    python RabbitMQ/InsultService/broadcaster.py (emissor de insults)
+
+    # Terminal D
+    python RabbitMQ/InsultService/receiver.py (receptor de insults)
+
+3.2 InsultFilter
+    # Terminal A
+    python RabbitMQ/InsultFilter/filter.py (filtrat d'insults)
+
+    # Terminal B
+    python RabbitMQ/InsultFilter/text_producer.py (productor de frases)
+
+    # Terminal C
+    python RabbitMQ/InsultFilter/insult_producer.py (afegeix insults al servidor de filtrat)
+
+    # Terminal D
+    python RabbitMQ/InsultFilter/viewer.py (visualitzador d'insults)
+
+   # Terminal E
+    python RabbitMQ/InsultFilter/angry_producer.py (productor de frases amb insults)
+
+
+4. Pyro:
+    Primer fer a la terminal A:
+    pyro4-ns # ← Iniciar el name server de Pyro
+
+4.1 InsultService:
+
+    # Terminal A
+    python Pyro/InsultService/server.py # ← Servidor
+
+    # Terminal B
+    python Pyro/InsultService/reciever.py # ← Client receptor
+
+    # Terminal C
+    python Pyro/InsultService/client_adder.py # ← Afegeix insults
+
+4.2 InsultFilter:
+
+    # Terminal A
+    python Pyro/InsultFilter/server.py # ← Servidor
+
+    # Terminal B
+    python Pyro/InsultFilter/angry_producer.py # ← Productor de frases amb insults
+
+    # Terminal C
+    python Pyro/InsultFilter/text_producer.py # ← Productor de frases
+
+    # Terminal D
+    python Pyro/InsultFilter/worker.py # ← worker de filtrat
+
+    # Terminal E (opcional)
+    python Pyro/InsultFilter/viewer.py # ← Visualitzador de insults
