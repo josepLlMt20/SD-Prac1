@@ -12,5 +12,5 @@ texts = [
 
 for text in texts:
     result = filter_service.filter(text)
-    print(f"[PRODUCER] Enviado: {text}")
+    print(f"[PRODUCER] Enviat: {text}")
     time.sleep(1)

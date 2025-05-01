@@ -31,7 +31,7 @@ class InsultService:
                 proxy = xmlrpc.client.ServerProxy(url)
                 proxy.receive(insult)
             except Exception as e:
-                print(f"Error notifying {url}: {e}")
+                print(f"Error notificant {url}: {e}")
 
         with ThreadPoolExecutor() as executor:
             executor.map(send, self.subscribers)
@@ -53,5 +53,5 @@ server = SimpleXMLRPCServer(("localhost", 8000), allow_none=True)
 service = InsultService()
 service.start_broadcast()
 server.register_instance(service)
-print("[InsultService] Running on port 8000")
+print("[InsultService]  Corrent al port 8000...")
 server.serve_forever()

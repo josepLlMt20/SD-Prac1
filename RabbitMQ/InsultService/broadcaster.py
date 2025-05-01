@@ -14,5 +14,5 @@ stored_insults = [
 while True:
     for insult in stored_insults:
         channel.basic_publish(exchange='insult_exchange', routing_key='', body=insult)
-        print(f"Broadcasted: {insult}")
+        print(f"INSULT ENVIAT A RECIEVER: {insult}")
     time.sleep(5)

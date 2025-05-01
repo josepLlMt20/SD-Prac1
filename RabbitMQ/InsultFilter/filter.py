@@ -2,11 +2,9 @@ import pika
 import re
 import threading
 
-# 🧠 Llista d'insults en memòria
 insults = set()
 
 def start_insult_listener():
-    # ✅ Connexió i canal propis per aquest fil
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
     channel.queue_declare(queue='insult_queue')
@@ -23,7 +21,6 @@ def start_insult_listener():
     channel.start_consuming()
 
 def start_text_listener():
-    # ✅ Connexió i canals propis per aquest fil
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
     channel.queue_declare(queue='text_queue')
@@ -45,6 +42,5 @@ def start_text_listener():
     print("[→] Listening for texts to filter...")
     channel.start_consuming()
 
-# 🔁 Llançar cada listener en el seu fil (amb connexió pròpia)
 threading.Thread(target=start_insult_listener, daemon=True).start()
-start_text_listener()  # Aquest es bloqueja i es manté viu
+start_text_listener()

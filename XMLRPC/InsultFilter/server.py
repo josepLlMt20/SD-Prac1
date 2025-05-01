@@ -40,5 +40,5 @@ class FilterServer:
 
 server = SimpleXMLRPCServer(("localhost", 8010), allow_none=True)
 server.register_instance(FilterServer())
-print("[FilterServer] Corriendo en puerto 8010")
+print("[FilterServer] Corrent a a http://localhost:8010/")
 server.serve_forever()

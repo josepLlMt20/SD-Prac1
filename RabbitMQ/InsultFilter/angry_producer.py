@@ -19,7 +19,7 @@ angry_lines = [
 ]
 
 while True:
-    text = f"Here's an angry message: {random.choice(angry_lines)}"
+    text = f"Insult: {random.choice(angry_lines)}"
     channel.basic_publish(exchange='', routing_key='text_queue', body=text)
-    print(f"[AngryProducer] Sent: {text}")
+    print(f"[AngryProducer] Enviat: {text}")
     time.sleep(3)

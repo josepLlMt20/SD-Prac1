@@ -36,9 +36,9 @@ def worker_loop(n):
     print(f"[Worker-{n}] Processed {count} tasks.")
 
 def run_scaling_test(num_workers):
-    print(f"\n🧪 Testing amb {num_workers} worker(s)...")
+    print(f"\n Testing amb {num_workers} worker(s)...")
 
-    # 🔄 Reiniciem estat del servidor
+    # Reiniciem estat del servidor
     reset_proxy = xmlrpc.client.ServerProxy("http://localhost:8010/")
     reset_proxy.reset()
 
@@ -72,11 +72,11 @@ if __name__ == "__main__":
         duration = run_scaling_test(workers)
         results.append((workers, duration))
 
-    print("\n📊 Resultats finals:")
+    print("\n Resultats finals:")
     for workers, dur in results:
         print(f"{workers} workers ➝ {dur:.2f}s")
 
     speedup_1 = results[0][1]
     for workers, dur in results[1:]:
         speedup = speedup_1 / dur
-        print(f"⚡ Speedup amb {workers} workers: {speedup:.2f}x")
+        print(f" Speedup amb {workers} workers: {speedup:.2f}x")

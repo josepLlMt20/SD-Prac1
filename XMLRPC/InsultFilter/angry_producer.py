@@ -21,5 +21,5 @@ texts = [
 while True:
     t = random.choice(texts)
     proxy.submit_insult(t)
-    print(f"[ClientAngry] Enviado: {t}")
+    print(f"[ClientAngry] Enviat: {t}")
     time.sleep(3)

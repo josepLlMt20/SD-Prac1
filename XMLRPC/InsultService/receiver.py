@@ -4,13 +4,13 @@ import threading
 
 class Receiver:
     def receive(self, insult):
-        print(f"[Receiver] 📢 Recibido: {insult}")
+        print(f"[Receiver] Rebut: {insult}")
         return True
 
 def run_receiver():
     server = SimpleXMLRPCServer(("localhost", 8001), allow_none=True)
     server.register_instance(Receiver())
-    print("[Receiver] Esperando insultos en puerto 8001")
+    print("[Receiver] Esperant insults al port 8001...")
     server.serve_forever()
 
 threading.Thread(target=run_receiver, daemon=True).start()

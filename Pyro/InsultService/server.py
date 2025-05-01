@@ -14,7 +14,7 @@ class InsultService:
     def add_insult(self, insult):
         if insult not in self.insults:
             self.insults.add(insult)
-            print(f"[SERVER] Insulto añadido: {insult}")
+            print(f"[SERVER] Insult afegit: {insult}")
             return True
         return False
 
@@ -23,7 +23,7 @@ class InsultService:
 
     def subscribe(self, callback):
         self.subscribers.append(callback)
-        return "Subscrito correctamente."
+        return "Subscrit correctament."
 
     def start_broadcasting(self):
         def loop():
@@ -34,7 +34,7 @@ class InsultService:
                         try:
                             sub.notify(insult)
                         except Exception as e:
-                            print(f"[SERVER] Error notificando: {e}")
+                            print(f"[SERVER] Error notificant: {e}")
                 time.sleep(5)
 
         threading.Thread(target=loop, daemon=True).start()
@@ -48,5 +48,5 @@ ns = Pyro4.locateNS()
 uri = daemon.register(service)
 ns.register("InsultService", uri)
 
-print("Servidor InsultService corriendo...")
+print("Servidor InsultService corrent...")
 daemon.requestLoop()

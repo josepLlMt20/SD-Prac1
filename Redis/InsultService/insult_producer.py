@@ -16,6 +16,6 @@ i = 0
 while True:
     insult = insults[i % len(insults)]
     r.rpush(INSULT_QUEUE, insult)
-    print(f"Produced: {insult}")
+    print(f"Insult afegit a la cua: {insult}")
     i += 1
     time.sleep(5)

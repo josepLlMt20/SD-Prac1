@@ -11,9 +11,9 @@ queue_name = result.method.queue
 channel.queue_bind(exchange='insult_exchange', queue=queue_name)
 
 def callback(ch, method, properties, body):
-    print(f"Received: {body.decode()}")
+    print(f"Rebut: {body.decode()}")
 
 channel.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
 
-print("Waiting for insults...")
+print("Esperant Insults...")
 channel.start_consuming()

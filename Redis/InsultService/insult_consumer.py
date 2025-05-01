@@ -2,7 +2,7 @@ import redis
 from Redis.constants import INSULT_QUEUE
 from Redis.insults_data import add_insult
 
-# Guarda els insults rebus si no existeixen
+# Guarda els insults rebuts si no existeixen
 
 r = redis.Redis(decode_responses=True)
 

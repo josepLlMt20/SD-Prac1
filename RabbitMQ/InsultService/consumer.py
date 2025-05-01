@@ -14,10 +14,10 @@ def callback(ch, method, properties, body):
 
     if insult not in stored_insults:  # Evita duplicados
         stored_insults.add(insult)
-        print(f"Stored: {insult}")
+        print(f"Guardat: {insult}")
 
 
 channel.basic_consume(queue='insult_queue', on_message_callback=callback, auto_ack=True)
 
-print("Waiting for insults...")
+print("Esperant Insults...")
 channel.start_consuming()

@@ -18,5 +18,5 @@ insults = [
 while True:
     insult = random.choice(insults)
     channel.basic_publish(exchange='', routing_key='insult_queue', body=insult)
-    print(f"Produced: {insult}")
+    print(f"Enviat: {insult}")
     time.sleep(5)

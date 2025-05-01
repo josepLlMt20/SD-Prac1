@@ -21,6 +21,6 @@ insults = [
 
 for insult in insults:
     channel.basic_publish(exchange='', routing_key='insult_queue', body=insult)
-    print(f"[InsultProducer] Sent insult: {insult}")
+    print(f"[InsultProducer] Insult enviat: {insult}")
 
 connection.close()

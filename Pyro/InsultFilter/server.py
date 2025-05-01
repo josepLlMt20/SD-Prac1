@@ -30,5 +30,5 @@ service = FilterService()
 uri = daemon.register(service)
 ns.register("FilterService", uri)
 
-print("[SERVER] FilterService corrent la marato...")
+print("[SERVER] FilterService corrent...")
 daemon.requestLoop()

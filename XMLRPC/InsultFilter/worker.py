@@ -8,7 +8,7 @@ while True:
     text = filter_proxy.get_task()
     if text:
         insults = filter_proxy.get_insults()
-        print(f"[Worker] Procesando: {text}")
+        print(f"[Worker] Processant: {text}")
         filtered = text
 
         for insult in insults:
@@ -17,6 +17,6 @@ while True:
             filtered = pattern.sub("CENSORED", filtered)
 
         filter_proxy.submit_result(filtered)
-        print(f"[Worker] Resultado enviado: {filtered}")
+        print(f"[Worker] Resultat enviat: {filtered}")
     else:
         time.sleep(0.1)

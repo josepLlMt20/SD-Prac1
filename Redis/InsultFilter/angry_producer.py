@@ -1,20 +1,11 @@
-import redis
-import time
-from Redis.constants import TEXT_QUEUE
+from Redis.insults_data import add_insult
 
-# Genera texts amb insults cada 5 segons
-
-r = redis.Redis(decode_responses=True)
-
-angry_lines = [
-    "You're as useless as the 'ueue' in 'queue'.",
-    "I can't believe you wrote this code."
+insults = [
+    "tonto", "idiota", "imbécil", "bobo", "cretino",
+    "useless", "stupid", "fool", "dumb", "moron",
+    "idiot", "jerk", "loser", "dimwit", "nitwit",
 ]
 
-i = 0
-while True:
-    text = f"Here’s some angry input: {angry_lines[i % len(angry_lines)]}"
-    r.rpush(TEXT_QUEUE, text)
-    print(f"Produced (angry): {text}")
-    i += 1
-    time.sleep(5)
+for insult in insults:
+    added = add_insult(insult)
+    print(f"{'✔️' if added else '❌'} {insult}")

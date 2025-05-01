@@ -1,15 +1,32 @@
 import redis
 import time
+import random
 from Redis.constants import TEXT_QUEUE
-
-# Envia text normal a la cua cada 5 segons
 
 r = redis.Redis(decode_responses=True)
 
+sujetos = [
+    "Mi jefe", "El conductor", "Mi compañero de trabajo", "Ese tipo", "El profesor",
+    "El alumno", "Mi vecino", "El cliente", "El desconocido", "Él", "Ella"
+]
+
+insultos = [
+    "tonto", "idiota", "imbécil", "bobo", "cretino",
+    "inútil", "estúpido", "payaso", "burro", "menso",
+    "torpe", "patán", "fracasado", "corto", "zoquete"
+]
+
+acciones = [
+    "se comporta como un", "habla como un", "parece un", "claramente es un", "no es más que un"
+]
+
 i = 0
 while True:
-    text = f"This is a clean text message number {i}."
-    r.rpush(TEXT_QUEUE, text)
-    print(f"Produced (clean): {text}")
+    sujeto = random.choice(sujetos)
+    insulto = random.choice(insultos)
+    accion = random.choice(acciones)
+    texto = f"{sujeto} {accion} {insulto}."
+    r.rpush(TEXT_QUEUE, texto)
+    print(f"Produit (amb insult): {texto}")
     i += 1
     time.sleep(5)

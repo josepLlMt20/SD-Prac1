@@ -15,13 +15,13 @@ def main():
         "Eres como un compilador sin errores."
     ]
 
-    print("[ClientAdder] Añadiendo insultos...")
+    print("[ClientAdder] Afegint insults...")
     for insult in insults:
         success = proxy.add_insult(insult)
         if success:
-            print(f"✅ Insulto añadido: {insult}")
+            print(f"✅ Insult afegit: {insult}")
         else:
-            print(f"⚠️  El insulto ya existía: {insult}")
+            print(f"⚠️  El insult existent a la cua: {insult}")
 
 if __name__ == "__main__":
     main()

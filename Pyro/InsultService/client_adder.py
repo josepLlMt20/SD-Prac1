@@ -16,4 +16,4 @@ insults = [
 
 for insult in insults:
     insult_service.add_insult(insult)
-    print("[CLIENT] Insultos añadidos correctamente.")
+    print("[CLIENT] Insults afegits correctament.")

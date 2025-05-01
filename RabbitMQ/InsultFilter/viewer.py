@@ -4,7 +4,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
 channel = connection.channel()
 channel.queue_declare(queue='results_queue')
 
-print("[👀] Watching filtered results:")
+print("Resultats filtrats:")
 
 def callback(ch, method, properties, body):
     print(f"- {body.decode()}")

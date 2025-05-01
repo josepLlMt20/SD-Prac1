@@ -6,17 +6,17 @@ from Redis.constants import INSULT_CHANNEL
 # Publica insults del llistat
 r = redis.Redis(decode_responses=True)
 
-print("InsultBroadcaster started.")
+print("InsultBroadcaster corrent.")
 
 while True:
     insults = get_insults()  # refresquem la llista a cada bucle
     if not insults:
-        print("No insults available.")
+        print("No hi ha insults disponibles.")
         time.sleep(5)
         continue
 
     for insult in insults:
         r.publish(INSULT_CHANNEL, insult)
-        print(f"Broadcasted: {insult}")
+        print(f"Insult publicat: {insult}")
         time.sleep(5)
 

@@ -16,7 +16,7 @@ def run_worker():
             pattern = re.compile(r'\b' + re.escape(insult) + r'\b', re.IGNORECASE)
             filtered = pattern.sub("CENSORED", filtered)
         proxy.submit_result(filtered)
-        print(f"[Worker] Procesado: {filtered}")
+        print(f"[Worker] Processat: {filtered}")
 
 def test_insult_filter():
     print("[TEST] Afegint insults...")
