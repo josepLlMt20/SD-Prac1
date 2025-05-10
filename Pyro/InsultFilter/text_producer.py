@@ -10,6 +10,7 @@ texts = [
     "Te mando un abrazo digital",
 ]
 
+# Envia textos sense insults al FilterService
 for text in texts:
     result = filter_service.filter(text)
     print(f"[PRODUCER] Enviat: {text}")

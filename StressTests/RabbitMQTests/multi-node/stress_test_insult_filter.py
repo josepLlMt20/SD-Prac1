@@ -1,16 +1,23 @@
 import pika
 import time
 import threading
+import random
 
 NUM_TEXTS = 300
 TEXT_QUEUE = "text_queue"
+INSULTS = ["inútil", "cenicero", "ficción", "caracol", "cojo"]
+SUBJECTS = ["Mi jefe", "El conductor", "Mi vecino", "Ese tipo", "El cliente"]
+ACTIONS = ["es un", "parece un", "se comporta como un", "claramente es un"]
 
 def send_texts(client_id, num_texts_per_client):
     connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
     channel = connection.channel()
     channel.queue_declare(queue=TEXT_QUEUE)
     for i in range(num_texts_per_client):
-        text = f"Missatge sense insults {i}"
+        subject = random.choice(SUBJECTS)
+        action = random.choice(ACTIONS)
+        insult = random.choice(INSULTS)
+        text = f"{subject} {action} {insult} (Client {client_id}-{i})."
         channel.basic_publish(exchange='', routing_key=TEXT_QUEUE, body=text.encode())
         print(f"[TextProducer {client_id}] Enviat: {text}")
     connection.close()
@@ -21,9 +28,6 @@ def run_scaling_test(num_clients):
     start_time = time.time()
 
     for i in range(num_clients):
-        # start = i * texts_per_client
-        # end = (i + 1) * texts_per_client
-        # t = threading.Thread(target=send_texts, args=(i + 1, start, end))
         t = threading.Thread(target=send_texts, args=(i + 1, texts_per_client))
         t.start()
         threads.append(t)

@@ -14,6 +14,7 @@ def send_insults(client_id, num_insults_per_client):
     for i in range(num_insults_per_client):
         insult = f"Insult-{client_id}-{i}"
         channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=insult.encode())
+        print(f"Text enviat: {insult}")
     connection.close()
 
 def run_scaling_test(num_clients):
@@ -23,9 +24,6 @@ def run_scaling_test(num_clients):
 
     # Per cada client cridarem send_insults()
     for i in range(num_clients):
-        #start = i * insults_per_client
-        #end = (i + 1) * insults_per_client
-        #t = threading.Thread(target=send_insults, args=(i + 1, start, end))
         t = threading.Thread(target=send_insults, args=(i + 1, insults_per_client))
         t.start()
         threads.append(t)

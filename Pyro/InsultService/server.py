@@ -6,6 +6,8 @@ import random
 
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
+
+# Crea un servei anomenat InsultService. Té llista d'insults i llista de subscriptors
 class InsultService:
     def __init__(self):
         self.insults = set()
@@ -25,6 +27,7 @@ class InsultService:
         self.subscribers.append(callback)
         return "Subscrit correctament."
 
+    # Cada 5 segons, selecciona un insult aleatori i el reenvia a tots els subscriptors
     def start_broadcasting(self):
         def loop():
             while True:

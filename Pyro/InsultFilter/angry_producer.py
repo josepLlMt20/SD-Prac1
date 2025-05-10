@@ -10,6 +10,7 @@ texts = [
     "Qué pedorro más grande, Josep",
 ]
 
+# Envia textos amb insults al Filter Service per a que els filtri
 for text in texts:
     result = filter_service.filter(text)
     print(f"[PRODUCER] Enviat: {text}")

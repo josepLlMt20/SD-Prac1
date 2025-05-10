@@ -7,10 +7,11 @@ class FilterService:
         self.results = []
         self.insults = {"pedorro", "cabezón", "tontaco", "paco", "picapollo", "mierdolo"}
 
+    # Processa el text i substitueix els insults per CENSORED
     def filter(self, text):
         censored = []
-        for word in text.split(): #això va paraula per paraula però abans no hem fet un que anava directament?
-            clean = word.lower().strip(",.!?")  #això tampoc crec que calgui no?
+        for word in text.split():
+            clean = word.lower().strip(",.!?")
             if clean in self.insults:
                 censored.append("CENSORED")
             else:

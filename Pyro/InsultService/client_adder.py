@@ -14,6 +14,7 @@ insults = [
     "Tamagotchi humano"
 ]
 
+# Afegeix insults a la llista del servidor Pyro
 for insult in insults:
     insult_service.add_insult(insult)
     print("[CLIENT] Insults afegits correctament.")

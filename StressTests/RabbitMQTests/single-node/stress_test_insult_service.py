@@ -1,6 +1,8 @@
 import pika
 import time
 
+from main import print_hi
+
 NUM_INSULTS = 300
 INSULT_QUEUE = "insult_queue"
 
@@ -17,6 +19,7 @@ start_time = time.time()
 for i in range(NUM_INSULTS):
     insult = f"Generated insult #{i}"
     channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=insult.encode())
+    print(f"Text enviat: {insult}")
 
 connection.close()
 

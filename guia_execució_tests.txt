@@ -11,15 +11,17 @@ INSULTFILTER:
 
 
 PYRO
+tenir en funcionament el Name Server (pyro4-ns) i el servidor (server.py)
+pyro4-ns o python -m Pyro4.naming
 INSULTSERVICE:
-    - Terminal 1 --> python RabbitMQ/InsultService/consumer.py
-    - Terminal 2 --> python .\StressTests\RabbitMQTests\single-node\stress_test_insult_service.py
-                     python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_service.py
+    - Terminal 1 --> python Pyro/InsultService/server.py
+    - Terminal 2 --> python .\StressTests\PyroTests\single-node\stress_test_insult_service.py
+                     python .\StressTests\PyroTests\multi-node\stress_test_insult_service.py
 
 INSULTFILTER:
-    - Terminal 1 --> python RabbitMQ/InsultFilter/filter.py
-    - Terminal 2 --> python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_filter.py
-                     python .\StressTests\RabbitMQTests\single-node\stress_test_insult_filter.py
+    - Terminal 1 --> python Pyro/InsultFilter/server.py
+    - Terminal 2 --> python .\StressTests\PyroTests\multi-node\stress_test_insult_filter.py
+                     python .\StressTests\PyroTests\single-node\stress_test_insult_filter.py
 
 
 

@@ -10,7 +10,7 @@ daemon = Pyro4.Daemon()
 receiver = Receiver()
 uri = daemon.register(receiver)
 
-# CREAMOS UN PROXY del objeto local registrado
+# Crea un proxy del seu objecte local. Es subscriu al servidor que el cridarà cada x
 proxy = Pyro4.Proxy(uri)
 
 insult_service = Pyro4.Proxy("PYRONAME:InsultService")
