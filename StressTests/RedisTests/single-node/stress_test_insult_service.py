@@ -20,3 +20,15 @@ rps = NUM_INSULTS / duration
 print(f"\n📊 Resultats:")
 print(f" - Temps total: {duration:.2f}s")
 print(f" - RPS (requests/second): {rps:.2f}")
+
+data = [{
+    "Test": "InsultService",
+    "Middleware": "Redis",
+    "Mode": "Single-node",
+    "Clients": 1,
+    "Num Tasks": NUM_INSULTS,
+    "Temps Total (s)": round(duration, 2),
+    "RPS": round(rps, 2)
+}]
+
+guardar_resultats(data, sheet_name="Redis_Single_Service")

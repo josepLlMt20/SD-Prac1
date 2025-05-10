@@ -46,3 +46,18 @@ if __name__ == "__main__":
     for clients, dur in results[1:]:
         speedup = baseline / dur
         print(f" Speedup amb {clients} clients: {speedup:.2f}x")
+
+    data = []
+    for clients, duration in results:
+        speedup = baseline / duration if clients > 1 else 1.0
+        data.append({
+            "Test": "InsultService",
+            "Middleware": "XMLRPC",
+            "Mode": "Multi-node",
+            "Clients": clients,
+            "Num Tasks": NUM_REQUESTS,
+            "Temps Total (s)": round(duration, 2),
+            "Speedup": round(speedup, 2)
+        })
+
+    guardar_resultats(data, sheet_name="XMLRPC_Multi_Service")

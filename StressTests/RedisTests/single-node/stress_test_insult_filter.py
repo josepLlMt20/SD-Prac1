@@ -48,3 +48,15 @@ print("\n📊 Resultats del stress test:")
 print(f" - Total textos processats: {NUM_TASKS}")
 print(f" - Temps total: {duration:.2f} s")
 print(f" - RPS (requests/second): {rps:.2f}")
+
+data = [{
+    "Test": "InsultFilter",
+    "Middleware": "Redis",
+    "Mode": "Single-node",
+    "Clients": 1,
+    "Num Tasks": NUM_TASKS,
+    "Temps Total (s)": round(duration, 2),
+    "RPS": round(rps, 2)
+}]
+
+guardar_resultats(data, sheet_name="Redis_Single_Filter")

@@ -3,6 +3,7 @@ import time
 import random
 import re
 from threading import Thread
+from StressTests.data_manager import guardar_resultats
 
 proxy = xmlrpc.client.ServerProxy("http://localhost:8010/")
 NUM_REQUESTS = 250
@@ -54,3 +55,15 @@ rps = NUM_REQUESTS / duration
 print(f"\n📊 Resultats:")
 print(f" - Temps total: {duration:.2f} s")
 print(f" - RPS (Requests per second): {rps:.2f}")
+
+data = [{
+    "Test": "InsultFilter",
+    "Middleware": "XMLRPC",
+    "Mode": "Single-node",
+    "Clients": 1,
+    "Num Tasks": NUM_REQUESTS,
+    "Temps Total (s)": round(duration, 2),
+    "RPS": round(rps, 2)
+}]
+
+guardar_resultats(data, sheet_name="XMLRPC_Single_Filter")
