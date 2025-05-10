@@ -2,6 +2,7 @@ import Pyro4
 import time
 import threading
 import random
+from StressTests.data_manager import guardar_resultats
 
 NUM_TEXTS = 300
 
@@ -48,3 +49,20 @@ if __name__ == "__main__":
         if c > 1:
             speedup = base / d
             print(f" Speedup amb {c} clients: {speedup:.2f}x")
+
+    data = []
+    base_time = results[0][1]
+
+    for clients, duration in results:
+        speedup = base_time / duration if clients > 1 else 1.0
+        data.append({
+            "Test": "InsultFilter",
+            "Middleware": "PyRO",
+            "Mode": "Multi-node",
+            "Clients": clients,
+            "Num Tasks": NUM_TEXTS,
+            "Temps Total (s)": round(duration, 2),
+            "Speedup": round(speedup, 2)
+        })
+
+    guardar_resultats(data, sheet_name="PyRO_Multi_Filter")

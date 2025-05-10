@@ -1,5 +1,6 @@
 import redis
 import time
+from StressTests.data_manager import guardar_resultats
 
 r = redis.Redis(decode_responses=True)
 NUM_INSULTS = 300

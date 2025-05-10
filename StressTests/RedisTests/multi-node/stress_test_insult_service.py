@@ -45,6 +45,20 @@ if __name__ == "__main__":
     for c, d in resultados:
         print(f"{c} clients ➝ {d:.2f}s")
 
-    base = resultados[0][1]
+    base_time = resultados[0][1]
     for c, d in resultados[1:]:
-        print(f" Speedup amb {c} clients: {base/d:.2f}x")
+        print(f" Speedup amb {c} clients: {base_time/d:.2f}x")
+
+    for clients, duration in results:
+        speedup = base_time / duration if clients > 1 else 1.0
+        data.append({
+            "Test": "InsultService",
+            "Middleware": "Redis",
+            "Mode": "Multi-node",
+            "Clients": clients,
+            "Num Tasks": NUM_INSULTS,
+            "Temps Total (s)": round(duration, 2),
+            "Speedup": round(speedup, 2)
+        })
+
+    guardar_resultats(data, sheet_name="Redis_Multi_Service")

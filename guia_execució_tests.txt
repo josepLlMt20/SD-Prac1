@@ -24,4 +24,13 @@ INSULTFILTER:
                      python .\StressTests\PyroTests\single-node\stress_test_insult_filter.py
 
 
+Amb lo del excel a vegades dona error, sino executar com a:
+    python -m StressTests.PyroTests.single-node.stress_test_insult_filter
+    python -m StressTests.PyroTests.single-node.stress_test_insult_service
+    python -m StressTests.PyroTests.multi-node.stress_test_insult_filter
+    python -m StressTests.PyroTests.multi-node.stress_test_insult_service
+
+
+
+
 

@@ -3,6 +3,7 @@ import time
 import threading
 import re
 import random
+from StressTests.data_manager import guardar_resultats
 
 NUM_TASKS = 300
 TEXTS = [

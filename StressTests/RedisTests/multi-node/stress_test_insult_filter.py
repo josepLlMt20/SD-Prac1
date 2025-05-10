@@ -5,6 +5,7 @@ import random
 import re
 from Redis.constants import TEXT_QUEUE, RESULT_LIST, INSULT_LIST
 from Redis.insults_data import add_insult, get_insults
+from StressTests.data_manager import guardar_resultats
 
 NUM_TASKS = 1000
 
@@ -71,15 +72,31 @@ def run_scaling_test(num_workers):
     return duration
 
 if __name__ == "__main__":
-    resultados = []
+    resultats = []
     for workers in [1, 2, 3]:
-        duracion = run_scaling_test(workers)
-        resultados.append((workers, duracion))
+        duracio = run_scaling_test(workers)
+        resultats.append((workers, duracio))
 
     print("\n Resultats:")
-    for w, d in resultados:
+    for w, d in resultats:
         print(f"{w} workers ➝ {d:.2f}s")
 
-    base = resultados[0][1]
-    for w, d in resultados[1:]:
-        print(f" Speedup amb {w} workers: {base/d:.2f}x")
+    base_time = resultats[0][1]
+    for w, d in resultats[1:]:
+        print(f" Speedup amb {w} workers: {base_time/d:.2f}x")
+
+    data = []
+
+    for clients, duration in results:
+        speedup = base_time / duration if clients > 1 else 1.0
+        data.append({
+            "Test": "InsultFilter",
+            "Middleware": "Redis",
+            "Mode": "Multi-node",
+            "Clients": clients,
+            "Num Tasks": NUM_TASKS,
+            "Temps Total (s)": round(duration, 2),
+            "Speedup": round(speedup, 2)
+        })
+
+    guardar_resultats(data, sheet_name="Redis_Multi_Filter")

@@ -4,6 +4,7 @@ import re
 import random
 from Redis.constants import TEXT_QUEUE, RESULT_LIST, INSULT_LIST
 from Redis.insults_data import add_insult, get_insults
+from StressTests.data_manager import guardar_resultats
 
 r = redis.Redis(decode_responses=True)
 NUM_TASKS = 300

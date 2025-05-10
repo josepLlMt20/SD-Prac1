@@ -1,5 +1,6 @@
 import Pyro4
 import time
+from StressTests.data_manager import guardar_resultats
 
 NUM_INSULTS = 300
 
@@ -21,3 +22,15 @@ rps = NUM_INSULTS / duration
 print(f"\n📊 Resultats Pyro Insult Adder (Single-node):")
 print(f" - Temps total: {duration:.2f}s")
 print(f" - RPS (requests/second): {rps:.2f}")
+
+data = [{
+    "Test": "InsultService",
+    "Middleware": "PyRO",
+    "Mode": "Single-node",
+    "Clients": 1,
+    "Num Tasks": NUM_INSULTS,
+    "Temps Total (s)": round(duration, 2),
+    "RPS": round(rps, 2)
+}]
+
+guardar_resultats(data, sheet_name="PyRO_Single_Service")

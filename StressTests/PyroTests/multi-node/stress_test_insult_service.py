@@ -1,6 +1,7 @@
 import Pyro4
 import time
 import threading
+from StressTests.data_manager import guardar_resultats
 
 NUM_INSULTS = 300
 
@@ -30,15 +31,32 @@ def run_scaling_test(num_clients):
     return duration
 
 if __name__ == "__main__":
-    resultados = []
+    resultats = []
     for clients in [1, 2, 3]:
-        duracion = run_scaling_test(clients)
-        resultados.append((clients, duracion))
+        duracio = run_scaling_test(clients)
+        resultats.append((clients, duracio))
 
     print("\n Resultats Multi-node (Insult Adder):")
-    base = resultados[0][1]
-    for c, d in resultados:
+    base = resultats[0][1]
+    for c, d in resultats:
         print(f"{c} clients ➝ {d:.2f}s")
         if c > 1:
             speedup = base / d
             print(f" Speedup amb {c} clients: {speedup:.2f}x")
+
+    data = []
+    base_time = resultats[0][1]
+
+    for clients, duration in resultats:
+        speedup = base_time / duration if clients > 1 else 1.0
+        data.append({
+            "Test": "InsultService",
+            "Middleware": "PyRO",
+            "Mode": "Multi-node",
+            "Clients": clients,
+            "Num Tasks": NUM_INSULTS,
+            "Temps Total (s)": round(duration, 2),
+            "Speedup": round(speedup, 2)
+        })
+
+    guardar_resultats(data, sheet_name="PyRO_Multi_Service")
