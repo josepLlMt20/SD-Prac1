@@ -4,6 +4,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
 channel = connection.channel()
 channel.queue_declare(queue='results_queue')
 
+# Consumeix i mostra els missatges de la cua de resultats de filter.py
 print("Resultats filtrats:")
 
 def callback(ch, method, properties, body):

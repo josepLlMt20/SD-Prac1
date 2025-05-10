@@ -18,6 +18,7 @@ angry_lines = [
     "Eres más aburrido que ver crecer la hierba.",
 ]
 
+# Envia missatges amb insults a la text_queue
 while True:
     text = f"Insult: {random.choice(angry_lines)}"
     channel.basic_publish(exchange='', routing_key='text_queue', body=text)

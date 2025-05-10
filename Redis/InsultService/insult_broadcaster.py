@@ -3,7 +3,7 @@ import time
 from Redis.insults_data import get_insults
 from Redis.constants import INSULT_CHANNEL
 
-# Publica insults del llistat
+# Publica insults del llistat utilitzant el patró Pub/Sub
 r = redis.Redis(decode_responses=True)
 
 print("InsultBroadcaster corrent.")

@@ -2,11 +2,11 @@ import pika
 import time
 import random
 
-# Conexión a RabbitMQ
+# Conexió a RabbitMQ
 connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 
-# Declarar la cola
+# Declarar la cua
 channel.queue_declare(queue='insult_queue')
 
 insults = [
@@ -15,6 +15,7 @@ insults = [
     "Eres más lento que un caracol cojo."
 ]
 
+# Produeix insults i els envia a la insult_queue
 while True:
     insult = random.choice(insults)
     channel.basic_publish(exchange='', routing_key='insult_queue', body=insult)

@@ -19,6 +19,7 @@ insults = [
     "hierba"
 ]
 
+# Envia una llista d'insults a la cua d'insults i filter.py els recull i guarda a memòria
 for insult in insults:
     channel.basic_publish(exchange='', routing_key='insult_queue', body=insult)
     print(f"[InsultProducer] Insult enviat: {insult}")

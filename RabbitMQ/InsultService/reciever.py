@@ -5,6 +5,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
 channel = connection.channel()
 
 # Vincular al exchange
+# Escolta insults publicats per l'exchange
 channel.exchange_declare(exchange='insult_exchange', exchange_type='fanout')
 result = channel.queue_declare(queue='', exclusive=True)
 queue_name = result.method.queue

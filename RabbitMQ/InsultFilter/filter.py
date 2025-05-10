@@ -3,7 +3,8 @@ import re
 import threading
 
 insults = set()
-
+# Consumidor principal
+# Escolta la cua d'insults i els afegeix a la llista de memòria
 def start_insult_listener():
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()
@@ -20,6 +21,7 @@ def start_insult_listener():
     print("[→] Listening for new insults...")
     channel.start_consuming()
 
+# Escolta la cua dels textos i substitueix els insults trobats
 def start_text_listener():
     connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
     channel = connection.channel()

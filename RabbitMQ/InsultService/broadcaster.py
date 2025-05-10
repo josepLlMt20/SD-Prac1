@@ -11,6 +11,7 @@ stored_insults = [
     "Tienes menos carisma que un ladrillo mojado."
 ]
 
+# Publica insults cada 5s a l'exchange
 while True:
     for insult in stored_insults:
         channel.basic_publish(exchange='insult_exchange', routing_key='', body=insult)

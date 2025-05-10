@@ -1,0 +1,25 @@
+RABBITMQ
+INSULTSERVICE:
+    - Terminal 1 --> python RabbitMQ/InsultService/consumer.py
+    - Terminal 2 --> python .\StressTests\RabbitMQTests\single-node\stress_test_insult_service.py
+                     python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_service.py
+
+INSULTFILTER:
+    - Terminal 1 --> python RabbitMQ/InsultFilter/filter.py
+    - Terminal 2 --> python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_filter.py
+                     python .\StressTests\RabbitMQTests\single-node\stress_test_insult_filter.py
+
+
+PYRO
+INSULTSERVICE:
+    - Terminal 1 --> python RabbitMQ/InsultService/consumer.py
+    - Terminal 2 --> python .\StressTests\RabbitMQTests\single-node\stress_test_insult_service.py
+                     python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_service.py
+
+INSULTFILTER:
+    - Terminal 1 --> python RabbitMQ/InsultFilter/filter.py
+    - Terminal 2 --> python .\StressTests\RabbitMQTests\multi-node\stress_test_insult_filter.py
+                     python .\StressTests\RabbitMQTests\single-node\stress_test_insult_filter.py
+
+
+

@@ -5,6 +5,7 @@ connection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
 channel = connection.channel()
 channel.queue_declare(queue='text_queue')
 
+# Envia missatges sense insults a la text_queue
 i = 0
 while True:
     text = f"Missatge sense insults {i}."
