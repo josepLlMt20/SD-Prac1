@@ -1,32 +1,27 @@
 import pika
 import time
 
-from main import print_hi
-
-NUM_INSULTS = 300
+NUM_INSULTS  = 1_000
 INSULT_QUEUE = "insult_queue"
 
-print(f"[STRESS TEST RABBITMQ] Enviant {NUM_INSULTS} insults a la cua '{INSULT_QUEUE}'...")
+print(f"[STRESS TEST RabbitMQ] Publicando {NUM_INSULTS} insults…")
 
-# Conexió a RabbitMQ
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
+conn    = pika.BlockingConnection(pika.ConnectionParameters("localhost"))
+channel = conn.channel()
 channel.queue_declare(queue=INSULT_QUEUE)
+channel.queue_purge(queue=INSULT_QUEUE)
 
-start_time = time.time()
-
-# Generarem tants insults com NUM_INSULTS (300) i els publicarem a la cua
+start = time.time()
 for i in range(NUM_INSULTS):
-    insult = f"Generated insult #{i}"
-    channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=insult.encode())
-    print(f"Text enviat: {insult}")
+    payload = f"Generated insult #{i}"
+    channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=payload)
+end = time.time()
 
-connection.close()
+duration = end - start
+rps      = NUM_INSULTS / duration
+print(f"\n📊 Resultados Producer (Single-node):")
+print(f" • Tiempo envío: {duration:.3f}s")
+print(f" • Throughput:  {rps:.0f} msg/s")
 
-end_time = time.time()
-duration = end_time - start_time
-rps = NUM_INSULTS / duration
-
-print(f"\n📊 Resultats RabbitMQ (Single-node):")
-print(f" - Temps total: {duration:.2f}s")
-print(f" - RPS (requests/second): {rps:.2f}")
+channel.close()
+conn.close()

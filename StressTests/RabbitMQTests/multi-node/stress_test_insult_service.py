@@ -1,58 +1,81 @@
 import pika
-import time
 import threading
+import time
 
-NUM_INSULTS = 300
-INSULT_QUEUE = "insult_queue"
+# Parámetros
+NUM_INSULTS   = 1000
+INSULT_QUEUE  = "insult_queue"
+NUM_NODES     = [1, 2, 3]
 
-# Funció de representa un client enviant insults
-def send_insults(client_id, num_insults_per_client):
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    channel = connection.channel()
-    channel.queue_declare(queue=INSULT_QUEUE)   # Declarem la cua d'insults
+def service_node(node_id, stop_event):
+    local_set = set()
+    conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    ch   = conn.channel()
+    ch.queue_declare(queue=INSULT_QUEUE)
 
-    for i in range(num_insults_per_client):
-        insult = f"Insult-{client_id}-{i}"
-        channel.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=insult.encode())
-        print(f"Text enviat: {insult}")
-    connection.close()
+    def callback(ch, method, props, body):
+        insult = body.decode()
+        if insult not in local_set:
+            local_set.add(insult)
+        ch.basic_ack(delivery_tag=method.delivery_tag)
 
-def run_scaling_test(num_clients):
-    insults_per_client = NUM_INSULTS // num_clients # Dividim els insults entre els clients
+    ch.basic_qos(prefetch_count=1)
+    ch.basic_consume(queue=INSULT_QUEUE, on_message_callback=callback)
+
+    print(f"[Node-{node_id}] On, esperant insults…")
+    while not stop_event.is_set():
+        ch._process_data_events(time_limit=1)
+    conn.close()
+    print(f"[Node-{node_id}] Aturat. Total: {len(local_set)}")
+
+def run_scaling_test(num_nodes):
+    conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    ch   = conn.channel()
+    ch.queue_declare(queue=INSULT_QUEUE)
+    ch.queue_purge(queue=INSULT_QUEUE)
+    conn.close()
+
+    stop_events = []
     threads = []
-    start_time = time.time()
-
-    # Per cada client cridarem send_insults()
-    for i in range(num_clients):
-        t = threading.Thread(target=send_insults, args=(i + 1, insults_per_client))
+    for nid in range(1, num_nodes + 1):
+        ev = threading.Event()
+        t  = threading.Thread(target=service_node, args=(nid, ev), daemon=True)
         t.start()
+        stop_events.append(ev)
         threads.append(t)
 
+    conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+    ch   = conn.channel()
+    print(f"\n[TEST] Publicant {NUM_INSULTS} insults amb {num_nodes} node(s)…")
+    start = time.time()
+    for i in range(NUM_INSULTS):
+        ch.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=f"Insult-{i}")
+
+    while True:
+        q = ch.queue_declare(queue=INSULT_QUEUE, passive=True)
+        if q.method.message_count == 0:
+            break
+        time.sleep(0.05)
+    end = time.time()
+    duration = end - start
+
+    for ev in stop_events:
+        ev.set()
     for t in threads:
         t.join()
 
-    end_time = time.time()
-    duration = end_time - start_time
-    print(f"\n[{num_clients} client(s)] Temps: {duration:.2f}s")
+    conn.close()
+    print(f"[RESULT] Node(s)={num_nodes} → Temps total (pub+proc): {duration:.2f}s")
     return duration
 
 if __name__ == "__main__":
-    print(" Reiniciant cua d'insults...")
-    connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    channel = connection.channel()
-    channel.queue_declare(queue=INSULT_QUEUE)
-    channel.queue_purge(queue=INSULT_QUEUE)
-    connection.close()
+    results = []
+    for n in NUM_NODES:
+        dur = run_scaling_test(n)
+        results.append((n, dur))
 
-    resultados = []
-    for clients in [1, 2, 3]:
-        duration = run_scaling_test(clients)
-        resultados.append((clients, duration))
-
-    print("\n Resultats Multi-node (Insult Producer):")
-    base = resultados[0][1]
-    for c, d in resultados:
-        print(f"{c} clients ➝ {d:.2f}s")
-        if c > 1:       # 1 client no té speedup per comprovar
-            speedup = base / d
-            print(f" Speedup amb {c} clients: {speedup:.2f}x")
+    print("\n📊 Speedup:")
+    base = results[0][1]
+    for nodes, dur in results:
+        speedup = base / dur
+        print(f" • {nodes} node(s): {dur:.2f}s → {speedup:.2f}×")

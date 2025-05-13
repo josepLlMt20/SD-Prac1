@@ -7,7 +7,7 @@ from Redis.insults_data import add_insult, get_insults
 from StressTests.data_manager import guardar_resultats
 
 r = redis.Redis(decode_responses=True)
-NUM_TASKS = 300
+NUM_TASKS = 1000
 
 r.delete(TEXT_QUEUE)
 r.delete(RESULT_LIST)
