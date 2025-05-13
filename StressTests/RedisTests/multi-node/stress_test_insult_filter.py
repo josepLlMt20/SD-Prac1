@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
     data = []
 
-    for clients, duration in results:
+    for clients, duration in resultats:
         speedup = base_time / duration if clients > 1 else 1.0
         data.append({
             "Test": "InsultFilter",
