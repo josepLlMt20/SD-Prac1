@@ -1,4 +1,5 @@
-# InsultService/server.py con tu estilo
+# InsultService/server.py
+import sys
 import Pyro4
 import threading
 import time
@@ -6,8 +7,6 @@ import random
 
 @Pyro4.expose
 @Pyro4.behavior(instance_mode="single")
-
-# Crea un servei anomenat InsultService. Té llista d'insults i llista de subscriptors
 class InsultService:
     def __init__(self):
         self.insults = set()
@@ -16,7 +15,7 @@ class InsultService:
     def add_insult(self, insult):
         if insult not in self.insults:
             self.insults.add(insult)
-            print(f"[SERVER] Insult afegit: {insult}")
+            print(f"[{self._name}] Insult afegit: {insult}")
             return True
         return False
 
@@ -27,7 +26,6 @@ class InsultService:
         self.subscribers.append(callback)
         return "Subscrit correctament."
 
-    # Cada 5 segons, selecciona un insult aleatori i el reenvia a tots els subscriptors
     def start_broadcasting(self):
         def loop():
             while True:
@@ -37,19 +35,22 @@ class InsultService:
                         try:
                             sub.notify(insult)
                         except Exception as e:
-                            print(f"[SERVER] Error notificant: {e}")
+                            print(f"[{self._name}] Error notificant: {e}")
                 time.sleep(5)
-
         threading.Thread(target=loop, daemon=True).start()
 
-# 👇 Estilo MyRemoteObject aquí
-service = InsultService()
-service.start_broadcasting()
+if __name__ == "__main__":
+    # El nombre que le damos al nodo en el NameServer
+    node_name = sys.argv[1] if len(sys.argv)>1 else "InsultService1"
 
-daemon = Pyro4.Daemon()
-ns = Pyro4.locateNS()
-uri = daemon.register(service)
-ns.register("InsultService", uri)
+    service = InsultService()
+    service._name = node_name
+    service.start_broadcasting()
 
-print("Servidor InsultService corrent...")
-daemon.requestLoop()
+    daemon = Pyro4.Daemon(host="localhost")
+    ns     = Pyro4.locateNS()
+    uri    = daemon.register(service)
+    ns.register(node_name, uri)
+
+    print(f"[{node_name}] Servidor corriendo en URI: {uri}")
+    daemon.requestLoop()

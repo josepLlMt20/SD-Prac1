@@ -3,10 +3,10 @@ import time
 import threading
 from StressTests.data_manager import guardar_resultats
 
-NUM_INSULTS = 300
+NUM_INSULTS = 1000
 
 def add_insults(client_id, num_insults_per_client):
-    insult_service = Pyro4.Proxy("PYRONAME:InsultService")
+    insult_service = Pyro4.Proxy("PYRONAME:InsultService1")
     for i in range(num_insults_per_client):
         insult = f"Client-{client_id}-Insult-{i}"
         insult_service.add_insult(insult)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     for clients, duration in resultats:
         speedup = base_time / duration if clients > 1 else 1.0
         data.append({
-            "Test": "InsultService",
+            "Test": "InsultService1",
             "Middleware": "PyRO",
             "Mode": "Multi-node",
             "Clients": clients,

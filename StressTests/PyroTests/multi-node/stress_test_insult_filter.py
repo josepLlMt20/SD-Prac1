@@ -4,7 +4,7 @@ import threading
 import random
 from StressTests.data_manager import guardar_resultats
 
-NUM_TEXTS = 300
+NUM_TEXTS = 1000
 
 def filter_texts(client_id, texts_to_filter):
     filter_service = Pyro4.Proxy("PYRONAME:FilterService")

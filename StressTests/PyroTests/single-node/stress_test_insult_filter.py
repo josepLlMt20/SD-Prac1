@@ -3,7 +3,7 @@ import time
 import random
 from StressTests.data_manager import guardar_resultats
 
-NUM_TEXTS = 300
+NUM_TEXTS = 1000
 
 print(f"[STRESS TEST PYRO FILTER] Filtrant {NUM_TEXTS} textos...")
 
