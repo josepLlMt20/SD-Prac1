@@ -1,6 +1,8 @@
 import pika
 import threading
 import time
+from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
 # Parámetros
 NUM_INSULTS   = 1000
@@ -76,6 +78,19 @@ if __name__ == "__main__":
 
     print("\n📊 Speedup:")
     base = results[0][1]
+    data_to_save = []
     for nodes, dur in results:
         speedup = base / dur
         print(f" • {nodes} node(s): {dur:.2f}s → {speedup:.2f}×")
+
+        result = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "num_nodes": nodes,
+            "duration_sec": round(dur, 2),
+            "speedup": round(speedup, 2),
+            "num_msgs": NUM_INSULTS
+        }
+        data_to_save.append(result)
+
+    guardar_resultats(data_to_save, sheet_name="MultiNode_InsultService")
+

@@ -3,6 +3,8 @@ import threading
 import time
 import random
 import re
+from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
 # Parámetros
 NUM_TEXTS    = 1000
@@ -93,6 +95,20 @@ if __name__ == "__main__":
 
     print("\n📊 Speedups:")
     base = results[0][1]
+    data_to_save = []
     for w, dur in results:
         speedup = base / dur
         print(f" • {w} worker(s): {dur:.2f}s → {speedup:.2f}×")
+
+        # Guardar en Excel
+        result = {
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "num_workers": w,
+            "duration_sec": round(dur, 2),
+            "speedup": round(speedup, 2),
+            "num_msgs": NUM_TEXTS
+        }
+        data_to_save.append(result)
+
+    guardar_resultats(data_to_save, sheet_name="MultiNode_InsultFilter")
+

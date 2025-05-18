@@ -3,6 +3,8 @@ import threading
 import time
 import random
 import re
+from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
 NUM_TEXTS     = 1000
 NUM_WORKERS   = 1
@@ -37,8 +39,7 @@ def worker_fn(id):
         text = body.decode()
         filtered = text
         for insult in insult_set:
-            filtered = re.sub(rf'\b{re.escape(insult)}\b',
-                              "CENSORED", filtered, flags=re.IGNORECASE)
+            filtered = re.sub(rf'\b{re.escape(insult)}\b', "CENSORED", filtered, flags=re.IGNORECASE)
         ch.basic_publish(exchange='', routing_key=RESULT_QUEUE, body=filtered)
         ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -77,5 +78,15 @@ rps   = NUM_TEXTS / total
 print("\n📊 RESULTATS:")
 print(f" - Temps total (enviament + processat): {total:.2f} s")
 print(f" - Throughput: {rps:.2f} msg/s")
+
+# ✅ Guardar en Excel
+result = {
+    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    "num_texts": NUM_TEXTS,
+    "num_workers": NUM_WORKERS,
+    "total_time_sec": round(total, 2),
+    "throughput_msgs_per_sec": round(rps, 2)
+}
+guardar_resultats([result], sheet_name="InsultFilterTest")
 
 conn.close()
