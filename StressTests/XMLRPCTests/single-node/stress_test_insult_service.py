@@ -2,7 +2,7 @@ import xmlrpc.client
 import time
 from StressTests.data_manager import guardar_resultats
 
-NUM_REQUESTS = 250
+NUM_REQUESTS = 1000
 proxy = xmlrpc.client.ServerProxy("http://localhost:8000/")
 
 print(f"[STRESS TEST] Enviant {NUM_REQUESTS} insults...")

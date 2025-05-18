@@ -6,7 +6,7 @@ NUM_INSULTS = 1000
 
 print(f"[PYRO STRESS TEST] Enviant {NUM_INSULTS} insults...")
 
-insult_service = Pyro4.Proxy("PYRONAME:InsultService")
+insult_service = Pyro4.Proxy("PYRONAME:InsultService1")
 
 start_time = time.time()
 

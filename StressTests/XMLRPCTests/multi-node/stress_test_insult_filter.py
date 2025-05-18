@@ -5,7 +5,7 @@ import re
 import random
 from StressTests.data_manager import guardar_resultats
 
-NUM_TASKS = 300
+NUM_TASKS = 1000
 TEXTS = [
     "Eres un tonto integral.",
     "Mi jefe es un cretino.",
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     data = []
     for clients, duration in results:
-        speedup = baseline / duration if clients > 1 else 1.0
+        speedup = speedup_1 / duration if clients > 1 else 1.0
         data.append({
             "Test": "InsultFilter",
             "Middleware": "XMLRPC",

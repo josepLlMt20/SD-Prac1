@@ -1,41 +1,69 @@
 import Pyro4
 import time
 import random
+from multiprocessing import Process
+from Pyro.InsultFilter.worker import run_worker
 from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
 NUM_TEXTS = 1000
+NUM_WORKERS = 1
 
-print(f"[STRESS TEST PYRO FILTER] Filtrant {NUM_TEXTS} textos...")
+def start_workers(n):
+    processes = []
+    for _ in range(n):
+        p = Process(target=run_worker)
+        p.start()
+        processes.append(p)
+    return processes
 
-filter_service = Pyro4.Proxy("PYRONAME:FilterService")
+def main():
+    filter_service = Pyro4.Proxy("PYRONAME:FilterService")
 
-insults = ["pedorro", "cabezón", "tontaco", "paco", "picapollo"]
-subjects = ["Mi jefe", "Ese tipo", "Tu primo", "El informático", "Josep"]
-actions = ["es un", "parece un", "se comporta como", "claramente es un"]
+    # Iniciar workers
+    worker_processes = start_workers(NUM_WORKERS)
 
-start_time = time.time()
+    # Enviar textos
+    insults = ["pedorro", "cabezón", "tontaco", "paco", "picapollo"]
+    subjects = ["Mi jefe", "Ese tipo", "Tu primo", "El informático", "Josep"]
+    actions = ["es un", "parece un", "se comporta como", "claramente es un"]
 
-for _ in range(NUM_TEXTS):
-    text = f"{random.choice(subjects)} {random.choice(actions)} {random.choice(insults)}"
-    filtered_text = filter_service.filter(text)
-    print(f"Text filtrat: {filtered_text}")
+    print(f"[STRESS TEST] Enviant {NUM_TEXTS} textos...")
+    start = time.time()
 
-end_time = time.time()
-duration = end_time - start_time
-rps = NUM_TEXTS / duration
+    for _ in range(NUM_TEXTS):
+        text = f"{random.choice(subjects)} {random.choice(actions)} {random.choice(insults)}"
+        filter_service.submit_text(text)
 
-print(f"\n📊 Resultats Pyro Filter (Single-node):")
-print(f" - Temps total: {duration:.2f}s")
-print(f" - RPS (requests/second): {rps:.2f}")
+    print("[STRESS TEST] Esperant resultats...")
+    while True:
+        results = filter_service.get_results()
+        if len(results) >= NUM_TEXTS:
+            break
+        time.sleep(0.2)
 
-data = [{
-    "Test": "InsultFilter",
-    "Middleware": "PyRO",
-    "Mode": "Single-node",
-    "Clients": 1,
-    "Num Tasks": NUM_TEXTS,
-    "Temps Total (s)": round(duration, 2),
-    "RPS": round(rps, 2)
-}]
+    duration = time.time() - start
+    rps = NUM_TEXTS / duration
 
-guardar_resultats(data, sheet_name="PyRO_Single_Filter")
+    print(f"\n📊 Resultats:")
+    print(f" - Temps total: {duration:.2f} s")
+    print(f" - RPS: {rps:.2f}")
+
+    data = [{
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "Test": "InsultFilter",
+        "Middleware": "PyRO",
+        "Mode": "Single-node",
+        "Clients": 1,
+        "Num Tasks": NUM_TEXTS,
+        "Temps Total (s)": round(duration, 2),
+        "RPS": round(rps, 2)
+    }]
+    guardar_resultats(data, sheet_name="PyRO_Single_Filter")
+
+    for p in worker_processes:
+        p.terminate()
+        p.join()
+
+if __name__ == "__main__":
+    main()

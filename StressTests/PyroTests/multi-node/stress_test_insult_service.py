@@ -1,62 +1,83 @@
 import Pyro4
 import time
-import threading
+import subprocess
+import sys
+from threading import Thread
 from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
-NUM_INSULTS = 1000
+NODES = ["InsultService1", "InsultService2", "InsultService3"]
+SERVER_SCRIPT = "../../../Pyro/InsultService/server.py"
+TASK_LOADS = [1000, 2500, 5000, 10000]
 
-def add_insults(client_id, num_insults_per_client):
-    insult_service = Pyro4.Proxy("PYRONAME:InsultService1")
-    for i in range(num_insults_per_client):
-        insult = f"Client-{client_id}-Insult-{i}"
-        insult_service.add_insult(insult)
-        print(f"Text Afegit: {insult}")
 
-def run_scaling_test(num_clients):
-    insults_per_client = NUM_INSULTS // num_clients
-    threads = []
+def launch_servers(names):
+    processes = []
+    for name in names:
+        p = subprocess.Popen([sys.executable, SERVER_SCRIPT, name])
+        processes.append(p)
+        time.sleep(1.5)
+    return processes
+
+
+def stop_servers(processes):
+    for p in processes:
+        p.terminate()
+        p.wait()
+
+
+def run_scaling_test(node_count, num_insults):
+    active_nodes = NODES[:node_count]
+    server_procs = launch_servers(active_nodes)
+
+    proxies = [Pyro4.Proxy(f"PYRONAME:{name}") for name in active_nodes]
+    insults_per_node = num_insults // node_count
+
+    print(f"[TEST] {node_count} node(s) | {num_insults} peticions...")
     start_time = time.time()
 
-    for i in range(num_clients):
-        t = threading.Thread(target=add_insults, args=(i + 1, insults_per_client))
+    threads = []
+
+    def enviar(proxy, start_idx):
+        for i in range(insults_per_node):
+            proxy.add_insult(f"Insult-{start_idx + i}")
+
+    for i, proxy in enumerate(proxies):
+        t = Thread(target=enviar, args=(proxy, i * insults_per_node))
         t.start()
         threads.append(t)
 
     for t in threads:
         t.join()
 
-    end_time = time.time()
-    duration = end_time - start_time
-    print(f"\n[{num_clients} client(s)] Temps: {duration:.2f}s")
+    duration = time.time() - start_time
+    stop_servers(server_procs)
     return duration
 
+
 if __name__ == "__main__":
-    resultats = []
-    for clients in [1, 2, 3]:
-        duracio = run_scaling_test(clients)
-        resultats.append((clients, duracio))
+    all_results = []
 
-    print("\n Resultats Multi-node (Insult Adder):")
-    base = resultats[0][1]
-    for c, d in resultats:
-        print(f"{c} clients ➝ {d:.2f}s")
-        if c > 1:
-            speedup = base / d
-            print(f" Speedup amb {c} clients: {speedup:.2f}x")
+    for num_insults in TASK_LOADS:
+        print(f"\n### TEST AMB {num_insults} PETICIONS ###")
+        results = []
+        for n in [1, 2, 3]:
+            d = run_scaling_test(n, num_insults)
+            results.append((n, d))
+            print(f"[RESULT] {n} node(s) ➝ {d:.2f}s")
 
-    data = []
-    base_time = resultats[0][1]
+        base = results[0][1]
+        for n, dur in results:
+            speedup = base / dur if n > 1 else 1.0
+            all_results.append({
+                "Test": "InsultService",
+                "Middleware": "PyRO",
+                "Mode": "Multi-node",
+                "Clients": n,
+                "Num Tasks": num_insults,
+                "Temps Total (s)": round(dur, 2),
+                "Speedup": round(speedup, 2),
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            })
 
-    for clients, duration in resultats:
-        speedup = base_time / duration if clients > 1 else 1.0
-        data.append({
-            "Test": "InsultService1",
-            "Middleware": "PyRO",
-            "Mode": "Multi-node",
-            "Clients": clients,
-            "Num Tasks": NUM_INSULTS,
-            "Temps Total (s)": round(duration, 2),
-            "Speedup": round(speedup, 2)
-        })
-
-    guardar_resultats(data, sheet_name="PyRO_Multi_Service")
+    guardar_resultats(all_results, sheet_name="PyRO_Multi_Service")

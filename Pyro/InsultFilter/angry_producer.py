@@ -12,6 +12,6 @@ texts = [
 
 # Envia textos amb insults al Filter Service per a que els filtri
 for text in texts:
-    result = filter_service.filter(text)
+    result = filter_service.submit_text(text)
     print(f"[PRODUCER] Enviat: {text}")
     time.sleep(1) # cal?

@@ -6,7 +6,7 @@ import time
 import random
 
 @Pyro4.expose
-@Pyro4.behavior(instance_mode="single")
+@Pyro4.behavior(instance_mode="session")
 class InsultService:
     def __init__(self):
         self.insults = set()
@@ -40,7 +40,6 @@ class InsultService:
         threading.Thread(target=loop, daemon=True).start()
 
 if __name__ == "__main__":
-    # El nombre que le damos al nodo en el NameServer
     node_name = sys.argv[1] if len(sys.argv)>1 else "InsultService1"
 
     service = InsultService()

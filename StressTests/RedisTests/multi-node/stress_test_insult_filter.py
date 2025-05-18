@@ -6,8 +6,10 @@ import re
 from Redis.constants import TEXT_QUEUE, RESULT_LIST, INSULT_LIST
 from Redis.insults_data import add_insult, get_insults
 from StressTests.data_manager import guardar_resultats
+from datetime import datetime
 
-NUM_TASKS = 1000
+WORKERS = [1, 2, 3]
+TASK_SIZES = [1000, 2500, 5000, 10000]
 
 def reset_redis():
     r = redis.Redis(decode_responses=True)
@@ -18,12 +20,12 @@ def reset_redis():
     for insult in insults:
         add_insult(insult)
 
-def generate_texts():
+def generate_texts(num_texts):
     r = redis.Redis(decode_responses=True)
     sujetos = ["Mi jefe", "El conductor", "Mi vecino", "Ese tipo", "El cliente"]
     acciones = ["es un", "parece un", "se comporta como un", "claramente es un"]
     insultos = ["tonto", "idiota", "imbécil", "bobo", "cretino"]
-    for _ in range(NUM_TASKS):
+    for _ in range(num_texts):
         texto = f"{random.choice(sujetos)} {random.choice(acciones)} {random.choice(insultos)}."
         r.rpush(TEXT_QUEUE, texto)
 
@@ -50,10 +52,10 @@ def worker_loop(worker_id):
 
     print(f"[Worker-{worker_id}] Ha processat {count} textos.")
 
-def run_scaling_test(num_workers):
-    print(f"\n Test amb {num_workers} worker(s)...")
+def run_scaling_test(num_workers, num_tasks):
+    print(f"\n Test amb {num_workers} worker(s) i {num_tasks} textos...")
     reset_redis()
-    generate_texts()
+    generate_texts(num_tasks)
 
     threads = []
     start = time.time()
@@ -72,31 +74,28 @@ def run_scaling_test(num_workers):
     return duration
 
 if __name__ == "__main__":
-    resultats = []
-    for workers in [1, 2, 3]:
-        duracio = run_scaling_test(workers)
-        resultats.append((workers, duracio))
+    all_data = []
 
-    print("\n Resultats:")
-    for w, d in resultats:
-        print(f"{w} workers ➝ {d:.2f}s")
+    for task_size in TASK_SIZES:
+        results = []
+        for workers in WORKERS:
+            duracio = run_scaling_test(workers, task_size)
+            results.append((workers, duracio))
 
-    base_time = resultats[0][1]
-    for w, d in resultats[1:]:
-        print(f" Speedup amb {w} workers: {base_time/d:.2f}x")
+        base_time = results[0][1]
+        print(f"\n📊 Resultats amb {task_size} textos:")
+        for w, d in results:
+            speedup = base_time / d if w > 1 else 1.0
+            print(f" • {w} worker(s): {d:.2f}s → {speedup:.2f}x")
+            all_data.append({
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "Test": "InsultFilter",
+                "Middleware": "Redis",
+                "Mode": "Multi-node",
+                "Clients": w,
+                "Num Tasks": task_size,
+                "Temps Total (s)": round(d, 2),
+                "Speedup": round(speedup, 2)
+            })
 
-    data = []
-
-    for clients, duration in resultats:
-        speedup = base_time / duration if clients > 1 else 1.0
-        data.append({
-            "Test": "InsultFilter",
-            "Middleware": "Redis",
-            "Mode": "Multi-node",
-            "Clients": clients,
-            "Num Tasks": NUM_TASKS,
-            "Temps Total (s)": round(duration, 2),
-            "Speedup": round(speedup, 2)
-        })
-
-    guardar_resultats(data, sheet_name="Redis_Multi_Filter")
+    guardar_resultats(all_data, sheet_name="Redis_Multi_Filter")

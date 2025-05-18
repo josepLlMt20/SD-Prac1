@@ -4,15 +4,14 @@ import time
 from StressTests.data_manager import guardar_resultats
 from datetime import datetime
 
-# Parámetros
-NUM_INSULTS   = 1000
-INSULT_QUEUE  = "insult_queue"
-NUM_NODES     = [1, 2, 3]
+TASK_SIZES = [1000, 2500, 5000, 10000]
+NUM_NODES = [1, 2, 3]
+INSULT_QUEUE = "insult_queue"
 
 def service_node(node_id, stop_event):
     local_set = set()
     conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    ch   = conn.channel()
+    ch = conn.channel()
     ch.queue_declare(queue=INSULT_QUEUE)
 
     def callback(ch, method, props, body):
@@ -28,29 +27,27 @@ def service_node(node_id, stop_event):
     while not stop_event.is_set():
         ch._process_data_events(time_limit=1)
     conn.close()
-    print(f"[Node-{node_id}] Aturat. Total: {len(local_set)}")
 
-def run_scaling_test(num_nodes):
+def run_scaling_test(num_nodes, num_msgs):
     conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    ch   = conn.channel()
+    ch = conn.channel()
     ch.queue_declare(queue=INSULT_QUEUE)
     ch.queue_purge(queue=INSULT_QUEUE)
     conn.close()
 
-    stop_events = []
-    threads = []
+    stop_events, threads = [], []
     for nid in range(1, num_nodes + 1):
         ev = threading.Event()
-        t  = threading.Thread(target=service_node, args=(nid, ev), daemon=True)
+        t = threading.Thread(target=service_node, args=(nid, ev), daemon=True)
         t.start()
         stop_events.append(ev)
         threads.append(t)
 
     conn = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-    ch   = conn.channel()
-    print(f"\n[TEST] Publicant {NUM_INSULTS} insults amb {num_nodes} node(s)…")
+    ch = conn.channel()
+    print(f"\n[TEST] Publicant {num_msgs} insults amb {num_nodes} node(s)…")
     start = time.time()
-    for i in range(NUM_INSULTS):
+    for i in range(num_msgs):
         ch.basic_publish(exchange='', routing_key=INSULT_QUEUE, body=f"Insult-{i}")
 
     while True:
@@ -67,30 +64,30 @@ def run_scaling_test(num_nodes):
         t.join()
 
     conn.close()
-    print(f"[RESULT] Node(s)={num_nodes} → Temps total (pub+proc): {duration:.2f}s")
     return duration
 
 if __name__ == "__main__":
-    results = []
-    for n in NUM_NODES:
-        dur = run_scaling_test(n)
-        results.append((n, dur))
+    all_results = []
 
-    print("\n📊 Speedup:")
-    base = results[0][1]
-    data_to_save = []
-    for nodes, dur in results:
-        speedup = base / dur
-        print(f" • {nodes} node(s): {dur:.2f}s → {speedup:.2f}×")
+    for num_msgs in TASK_SIZES:
+        results = []
+        for n in NUM_NODES:
+            dur = run_scaling_test(n, num_msgs)
+            results.append((n, dur))
 
-        result = {
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "num_nodes": nodes,
-            "duration_sec": round(dur, 2),
-            "speedup": round(speedup, 2),
-            "num_msgs": NUM_INSULTS
-        }
-        data_to_save.append(result)
+        base_time = results[0][1]
+        for n, dur in results:
+            speedup = base_time / dur if n > 1 else 1.0
+            print(f" • Nodes={n}, Msgs={num_msgs} → {dur:.2f}s (speedup: {speedup:.2f}x)")
+            all_results.append({
+                "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "Test": "InsultService",
+                "Middleware": "RabbitMQ",
+                "Mode": "Multi-node",
+                "Clients": n,
+                "Num Tasks": num_msgs,
+                "Temps Total (s)": round(dur, 2),
+                "Speedup": round(speedup, 2)
+            })
 
-    guardar_resultats(data_to_save, sheet_name="MultiNode_InsultService")
-
+    guardar_resultats(all_results, sheet_name="RabbitMQ_Multi_Service")

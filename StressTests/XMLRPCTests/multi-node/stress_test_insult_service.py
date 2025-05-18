@@ -3,7 +3,7 @@ import threading
 import time
 from StressTests.data_manager import guardar_resultats
 
-NUM_REQUESTS = 300
+NUM_REQUESTS = 1000
 
 def add_insults(thread_id, start_idx, end_idx):
     proxy = xmlrpc.client.ServerProxy("http://localhost:8000/")
