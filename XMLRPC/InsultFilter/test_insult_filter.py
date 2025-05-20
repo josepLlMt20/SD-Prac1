@@ -23,6 +23,7 @@ def test_insult_filter():
     insults = ["tonto", "idiota", "imbécil", "bobo", "cretino"]
     for insult in insults:
         proxy.submit_insult(insult)
+    print("[TEST] Insults afegits. ", proxy.get_insults())
 
     print("[TEST] Enviant textos...")
     texts = [
@@ -34,6 +35,7 @@ def test_insult_filter():
     ]
     for text in texts:
         proxy.submit_text(text)
+        print(f"[TEST] Text enviat: {text}")
 
     # Iniciar el worker com a thread
     print("[TEST] Iniciant worker integrat...")

@@ -12,6 +12,7 @@ r.delete(INSULT_LIST)
 insults = ["tonto", "idiota", "imbécil", "bobo", "cretino"]
 for insult in insults:
     add_insult(insult)
+print(f"[Producer] Insults afegits: {get_insults()}")
 
 texts = [
     "Mi jefe es un tonto.",
