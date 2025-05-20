@@ -15,7 +15,7 @@ def start_workers(n):
         p = Process(target=run_worker)
         p.start()
         processes.append(p)
-    time.sleep(1)  # Espera para asegurar que los workers están listos
+    time.sleep(1)
     return processes
 
 def send_texts(filter_service, num_texts):
@@ -29,20 +29,20 @@ def send_texts(filter_service, num_texts):
 
 def run_scaling_test(num_clients, num_texts):
     filter_service = Pyro4.Proxy("PYRONAME:FilterService")
-    filter_service.reset()  # Limpiar el estado antes de empezar
+    filter_service.reset()
 
     print(f"\n[Test] Enviant {num_texts} textos amb {num_clients} worker(s)...")
     worker_processes = start_workers(num_clients)
 
     start = time.time()
     send_texts(filter_service, num_texts)
-    time.sleep(0.2)  # Breve delay tras el envío de textos
+    time.sleep(0.2)
 
     while True:
         results = filter_service.get_results()
         if len(results) >= num_texts:
             break
-        time.sleep(0.05)  # Menor delay para mejorar precisión de medición
+        time.sleep(0.05)
 
     end = time.time()
     duration = end - start

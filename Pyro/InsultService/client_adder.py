@@ -1,4 +1,3 @@
-# InsultService/client_adder.py
 import Pyro4
 
 insult_service = Pyro4.Proxy("PYRONAME:InsultService")

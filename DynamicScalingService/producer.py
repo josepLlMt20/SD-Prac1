@@ -28,7 +28,7 @@ try:
 
         channel.basic_publish(exchange='', routing_key='insult_queue', body=phrase)
         print(f" [→] Sent: {phrase}")
-        time.sleep(0.05)  # Aproximadamente 2.5 mensajes/segundo
+        time.sleep(0.05)
 except KeyboardInterrupt:
     print("Producer stopped")
     connection.close()

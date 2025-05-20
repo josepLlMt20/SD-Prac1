@@ -1,4 +1,3 @@
-# InsultService/receiver.py (FIXED)
 import Pyro4
 
 @Pyro4.expose
